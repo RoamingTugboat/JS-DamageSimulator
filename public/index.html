@@ -1,0 +1,122 @@
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+	<script src="bundle.js"></script>
+  </head>
+  <body>
+  <div id="centerer">
+    <div class="hitboxSimulator">
+	  <img class="absolutePos" src="img/terrorist_translucent.png" width="444" height="824"/>
+	  <canvas class="absolutePos" id="theCanvas" width="444" height="824"></canvas>
+	</div>
+	<div class="gunData">
+	  <div class="weaponSelect">
+	    <span id="uiMod_weaponName">Loading...</span> <br/>
+	  </div>
+	  <div class="weaponSelectButtons">
+	    <button id="ui_buttonLeft">&lt;</button> <button id="ui_buttonRight" onclick="backend.selectedWeaponIncrement();refreshUi();">&gt;</button>
+	  </div>
+	  <div class="gunDataRanges">
+	    <b>Data:</b><br/>
+		&nbsp;One-Hit: <span id="uiMod_ohkHelmet">?</span><br/>
+	    &nbsp;Shot delta: <span id="uiMod_shotDelta">?</span><br/>
+	  </div>
+	  <br />
+	  <span id="sliderText"></span>
+	  <div class="absolutePos" class="sliderContainer">
+        <input type="range" min="4" value="492" max="3937" id="ui_rangeSlider"></input>
+      </div>
+	  <br />
+	  <br />
+	  <input type="checkbox" id="ui_checkArmor">
+	  <label for="ui_checkArmor">Enable Kevlar/Helmet</label>
+	</div>
+	<script>
+      const sliderTextDOM = document.getElementById("sliderText");
+      const uiMod_weaponNameDOM = document.getElementById("uiMod_weaponName");
+	  const uiMod_ohkHelmetDOM = document.getElementById("uiMod_ohkHelmet");
+	  const uiMod_shotDeltaDOM = document.getElementById("uiMod_shotDelta");
+      const weaponDbUrl = "weapons.json";
+	  
+	  ui_buttonLeft.onclick = onLeftArrowPressed;
+	  ui_buttonRight.onclick = onRightArrowPressed;
+	  ui_rangeSlider.oninput = onSliderMove;
+	  ui_checkArmor.onclick = onKevlarCheckboxChanged;
+	  
+	  // Refresh the UI as soon as weapon import succeeds:
+	  backend.importWeapons(weaponDbUrl, refreshUi);
+	  
+	  function onLeftArrowPressed() {
+	    backend.selectedWeaponDecrement();
+		refreshUi();
+	  }
+
+      function onRightArrowPressed() {
+	    backend.selectedWeaponIncrement();
+		refreshUi();
+	  }	 
+
+      function onKevlarCheckboxChanged() {
+		refreshUi();
+	  }	  	  
+		
+	  function onSliderMove() {
+		refreshUi();
+	  }
+	  
+	  function refreshUi() {
+		refreshSliderValue();
+		refreshWeaponName();
+		refreshOhkRange();
+		refreshShotDelta();
+		refreshHitboxes();
+	  }
+	  
+	  function refreshSliderValue() {
+		sliderTextDOM.innerHTML = inchToMeter(ui_rangeSlider.value)+"m";
+	  }
+	  
+	  function refreshWeaponName() {
+		uiMod_weaponNameDOM.innerHTML = backend.selectedWeaponName();
+	  }
+	  
+	  function refreshOhkRange() {
+	    const helmet = document.getElementById("ui_checkArmor").checked;
+	    const ohkRange = backend.ohkHeadRange(helmet);
+		
+		if(ohkRange == -1) {
+			uiMod_ohkHelmetDOM.innerHTML = "Not possible";
+		} else if(0 <= ohkRange && ohkRange < 3000) {
+		    // Realistically, no map has ranges higher than ~3000in,
+			// so any weapon that still kills someone at that range
+			// should be referred to as being a guaranteed kill just
+			// for simplicities sake.
+			uiMod_ohkHelmetDOM.innerHTML =  "At up to "+inchToMeter(ohkRange)+"m"
+		} else {
+			uiMod_ohkHelmetDOM.innerHTML = "Always";
+		}
+	  }
+	  
+	  function refreshShotDelta() {
+		uiMod_shotDeltaDOM.innerHTML = backend.selectedWeaponCadenceMs() +"ms";
+	  }
+	  
+	  function refreshHitboxes() {
+	    const canvas = document.getElementById('theCanvas');
+		const range = ui_rangeSlider.value;
+		const armorEnabled = document.getElementById("ui_checkArmor").checked;
+		backend.clearCanvas(canvas);
+		backend.drawHead(canvas, range, armorEnabled);
+		backend.drawChest(canvas, range, armorEnabled);
+		backend.drawStomach(canvas, range, armorEnabled);
+		backend.drawLegs(canvas, range);
+	  }
+	  
+	  function inchToMeter(dist) {
+	    const rangeInMeter = dist*0.0254;
+		return Math.round(rangeInMeter*100)/100;
+	  }
+	</script>
+  </div>
+  </body>
+</html>

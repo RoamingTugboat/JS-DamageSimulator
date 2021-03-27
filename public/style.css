@@ -1,0 +1,71 @@
+body {
+    background-color: #191919;
+    background-image: url("img/bg.jpg");
+    font-family: Verdana;
+    background-repeat: no-repeat;
+}
+
+#centerer {
+    position: absolute; 
+    margin-right: auto; 
+    margin-left: auto; 
+    margin-left: auto; 
+    left: 0; 
+    right: 0; 
+    width: 800px;
+}
+
+.hitboxSimulator {
+    margin-top: 16px;
+    margin-left: 160px;
+    position: relative;
+}
+
+.absolutePos {
+    position: absolute;
+}
+
+#sliderText {
+    font-size: 32px;
+    color: #9C998A;
+    font-weight: bold;
+}
+
+#slider {
+    margin-top:-10px;
+    width: 320px;
+}
+
+button {
+    color: #544A41;
+    background-color: #F0F0E1;
+    border: none;
+    text-align: center;
+    font-size: 24px;
+    padding: 2px 22px;
+}
+
+.gunData {
+    width: 260px;
+    border-radius: 12px;
+    padding: 20px;
+    position:absolute;
+    margin-left: 16px;
+    margin-top: 305px;
+    color: #36352D;
+    background-color: #CCC9BA;
+}
+
+.weaponSelect {
+    font-size: 42px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.weaponSelectButtons {
+    text-align: center;
+}
+
+.gunDataRanges {
+    margin-top:32px;
+}
